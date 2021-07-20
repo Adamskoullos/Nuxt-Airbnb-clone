@@ -36,12 +36,21 @@
           <div class="goog-map" ref="map"></div>
         </v-col>
       </v-row>
+      <v-row>
+          <v-col>
+              <div v-for="review in reviews" :key="review.objectID">
+                  <img :src="review.reviewer.image" alt="person">
+                  <h6>{{ review.reviewer.name }}</h6>
+                  <h6>{{ review.date }}</h6>
+                  <h6>{{ review.comment }}</h6>
+              </div>
+          </v-col>
+      </v-row>
     </v-col>
   </v-row>
 </template>
 
 <script>
-import homes from "@/data/homes.json";
 
 export default {
   head() {
@@ -49,22 +58,14 @@ export default {
       title: this.home.title,
     };
   },
-  data() {
-    return {
-      home: {}
-    };
-  },
-  methods: {
-  },
   mounted() {
       this.$maps.showMap(this.$refs.map, this.home._geoloc.lat, this.home._geoloc.lng);
   },
-  created() {
-    const home = homes.find(item => {
-      return item.objectID == this.$route.params.id;
-    });
-    this.home = home;
-  }
+  async asyncData({ params, $dataApi }) {
+      const homeResponse = await $dataApi.getHome(params.id);
+      const reviewResponse = await $dataApi.getReviewsByHomeId(params.id);
+    return{ home: homeResponse, reviews: reviewResponse.hits }
+  },
 };
 </script>
 
