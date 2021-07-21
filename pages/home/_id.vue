@@ -41,7 +41,7 @@
               <div v-for="review in reviews" :key="review.objectID">
                   <img :src="review.reviewer.image" alt="person">
                   <h6>{{ review.reviewer.name }}</h6>
-                  <h6>{{ review.date }}</h6>
+                  <h6>{{ formateDate(review.date) }}</h6>
                   <h6>{{ review.comment }}</h6>
               </div>
           </v-col>
@@ -66,6 +66,14 @@ export default {
       const reviewResponse = await $dataApi.getReviewsByHomeId(params.id);
     return{ home: homeResponse, reviews: reviewResponse.hits }
   },
+  methods: {
+    formateDate(dateStr){
+      const date = new Date(dateStr);
+      return date.toLocaleDateString(undefined, { 
+        weekday: 'short', day: 'numeric', month: 'short', year: 'numeric'  
+      });
+    }
+  }
 };
 </script>
 
